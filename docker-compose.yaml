@@ -1,0 +1,22 @@
+services:
+  liquidation-scanner:
+    build: .
+    container_name: liquidation-scanner
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Override config at runtime without rebuilding
+      - ./config/settings.yaml:/app/config/settings.yaml:ro
+      # Persist logs
+      - scanner-logs:/var/log/liquidation-scanner
+    # Optional: restrict network to prevent abuse
+    # networks:
+    #   - scanner-net
+
+volumes:
+  scanner-logs:
+
+# networks:
+#   scanner-net:
+#     driver: bridge

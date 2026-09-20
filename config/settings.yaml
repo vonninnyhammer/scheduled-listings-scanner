@@ -1,0 +1,46 @@
+# Liquidation Scanner - Core Configuration
+# Adjust these values before "Go Time"
+
+poll_interval_minutes: 30
+
+# Target hardware specifications
+target_specs:
+  models:
+    - "ThinkStation P920"
+    - "ThinkStation P520"
+  min_ram_gb: 256
+  required_cpu_family: "Xeon Gold"
+  max_price_usd: 1200.00
+
+# Alert routing
+alert:
+  email_target: "placeholder@local.domain"
+  from_address: "overseer-bot@local.domain"
+
+# SMTP configuration
+smtp:
+  server: "localhost"
+  port: 25
+  use_tls: false
+  username: ""       # Leave empty for unauthenticated local relay
+  password: ""       # Use env var SMTP_PASSWORD to override
+
+# Data sources (enable/disable as needed)
+sources:
+  ebay:
+    enabled: false
+    api_key: ""          # Set via env var EBAY_API_KEY
+    app_id: ""           # Set via env var EBAY_APP_ID
+    categories:
+      - "179"            # eBay category: Workstation Computers
+    search_terms:
+      - "ThinkStation P920"
+      - "ThinkStation P520"
+      - "Lenovo workstation parts"
+
+# Logging
+logging:
+  level: "INFO"
+  file: "/var/log/liquidation-scanner/scanner.log"
+  max_bytes: 10485760    # 10MB
+  backup_count: 5
