@@ -1,5 +1,5 @@
 # Liquidation Scanner - Core Configuration
-# Adjust these values before "Go Time"
+# Targets: ThinkStation P920/P520 + DDR4, Xeon Gold CPUs, SSDs
 
 poll_interval_minutes: 30
 
@@ -8,9 +8,21 @@ target_specs:
   models:
     - "ThinkStation P920"
     - "ThinkStation P520"
-  min_ram_gb: 256
+  # Parts targets (DDR4, Xeon Gold, SSDs) - matched via title/desc
+  parts:
+    ddr4:
+      terms: ["DDR4", "PC4-21300", "PC4-24000", "PC4-2666", "PC4-2933", "PC4-3200", "ECC DDR4", "LRDIMM DDR4"]
+      min_total_usd: 10.00
+      max_total_usd: 400.00
+    xeon_gold:
+      terms: ["Xeon Gold", "Intel Xeon Gold 6140", "Intel Xeon Gold 6130", "Intel Xeon Gold 6126", "Intel Xeon Gold 6240", "Xeon Gold 6152", "Xeon Gold 6252"]
+      max_price_usd: 250.00  # used/surplus enterprise CPUs often 50-200
+    ssd:
+      terms: ["SAS SSD", "NVMe SSD", "U.2 SSD", "2.5\" SSD", "Enterprise SSD", "Intel SSD DC", "Samsung PM863", "Micron 5200", "Kioxia PM5"]
+      max_total_usd: 300.00
+  min_ram_gb: 256  # for full systems
   required_cpu_family: "Xeon Gold"
-  max_price_usd: 1200.00
+  max_price_usd: 1200.00  # for full systems
 
 # Alert routing
 alert:
@@ -22,25 +34,78 @@ smtp:
   server: "localhost"
   port: 25
   use_tls: false
-  username: ""       # Leave empty for unauthenticated local relay
-  password: ""       # Use env var SMTP_PASSWORD to override
+  username: ""
+  password: ""
 
 # Data sources (enable/disable as needed)
 sources:
   ebay:
     enabled: false
-    api_key: ""          # Set via env var EBAY_API_KEY
-    app_id: ""           # Set via env var EBAY_APP_ID
+    api_key: ""
+    app_id: ""
     categories:
-      - "179"            # eBay category: Workstation Computers
+      - "179"  # Workstation Computers
+      - "168061"  # Computer Components & Parts
     search_terms:
       - "ThinkStation P920"
       - "ThinkStation P520"
-      - "Lenovo workstation parts"
+      - "Lenovo workstation"
+      - "DDR4 ECC RDIMM"
+      - "DDR4 LRDIMM"
+      - "Xeon Gold"
+      - "SAS SSD"
+      - "Enterprise SSD"
+
+  craigslist:
+    enabled: false
+    # Search multiple regions if desired (comma-separated)
+    regions: ["sfbay", "losangeles", "seattle", "chicago", "newyork", "austin", "dallas", "atlanta"]
+    categories: ["sss"]  # general for sale
+    search_terms:
+      - "thinkstation p920"
+      - "thinkstation p520"
+      - "lenovo workstation"
+      - "xeon gold"
+      - "ddr4 ecc"
+      - "enterprise ssd"
+      - "sas ssd"
+
+  govdeals:
+    enabled: false
+    base_url: "https://www.govdeals.com"
+    search_terms:
+      - "lenovo thinkstation"
+      - "xeon gold"
+      - "ddr4"
+      - "ssd"
+
+  liquidation:
+    enabled: false
+    base_url: "https://www.liquidation.com"
+    search_terms:
+      - "workstation"
+      - "server"
+      - "xeon gold"
+
+  bid4assets:
+    enabled: false
+    base_url: "https://www.bid4assets.com"
+    search_terms:
+      - "workstation"
+      - "lenovo"
+      - "xeon gold"
+
+  offerup:
+    enabled: false
+    search_terms:
+      - "thinkstation"
+      - "xeon gold"
+      - "ddr4"
+      - "ssd"
 
 # Logging
 logging:
   level: "INFO"
   file: "/var/log/liquidation-scanner/scanner.log"
-  max_bytes: 10485760    # 10MB
+  max_bytes: 10485760
   backup_count: 5
